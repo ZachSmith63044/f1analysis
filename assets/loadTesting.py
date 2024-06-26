@@ -139,7 +139,7 @@ print("Session:", session)
 print("Drivers:", drivers)
 
 
-session = fastf1.get_testing_session(int(year), 1, 1)
+session = fastf1.get_testing_session(int(year), 1, 3)
 session.load()
 
 driverNum = session.drivers

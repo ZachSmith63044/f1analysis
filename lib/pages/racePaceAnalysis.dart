@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class TimesViewNew extends StatefulWidget {
-  const TimesViewNew({super.key});
+class RacePaceChoices extends StatefulWidget {
+  const RacePaceChoices({super.key});
 
   @override
-  State<TimesViewNew> createState() => _TimesViewNewState();
+  State<RacePaceChoices> createState() => _RacePaceChoicesState();
 }
 
 List<String> tyres = ["SOFTS", "MEDIUMS", "HARDS", "INTERMEDIATES", "WETS", "ALL"];
@@ -14,7 +14,9 @@ Map<String, dynamic> mapData = {};
 List<List<List<List<dynamic>>>> exportData = [];
 bool load = false;
 
-class _TimesViewNewState extends State<TimesViewNew> {
+class _RacePaceChoicesState extends State<RacePaceChoices> {
+  List<List<bool>> chosenLaps = [];
+  List<List<double>> chosenLapTimes = [];
 
   double findBestLap(List<dynamic> laps)
   {
@@ -429,8 +431,13 @@ class _TimesViewNewState extends State<TimesViewNew> {
     }
 
     
-    Container GetDriverData(String name, String displayName)
+    Container GetDriverData(String name, String displayName, int index)
     {
+      if (chosenLaps.length <= index)
+      {
+        chosenLaps.add([]);
+        chosenLapTimes.add([]);
+      }
       List<List<dynamic>> softs = [];
       List<List<dynamic>> mediums = [];
       List<List<dynamic>> hards = [];
@@ -446,23 +453,23 @@ class _TimesViewNewState extends State<TimesViewNew> {
           {
             if (mapData[name][0][i][18] == 0)
             {
-              softs.add([i - cancelled, mapData[name][0][i][2], mapData[name][0][i][19], mapData[name][0][i][0], mapData[name][15][i][5], mapData[name][15][i][1], mapData[name][15][i][7]]); // weather is 15
+              softs.add([i - cancelled, mapData[name][0][i][2], mapData[name][0][i][19], mapData[name][0][i][0]]); // weather is 15
             }
             else if (mapData[name][0][i][18] == 1)
             {
-              mediums.add([i - cancelled, mapData[name][0][i][2], mapData[name][0][i][19], mapData[name][0][i][0], mapData[name][15][i][5], mapData[name][15][i][1], mapData[name][15][i][7]]); // weather is 15
+              mediums.add([i - cancelled, mapData[name][0][i][2], mapData[name][0][i][19], mapData[name][0][i][0]]); // weather is 15
             }
             else if (mapData[name][0][i][18] == 2)
             {
-              hards.add([i - cancelled, mapData[name][0][i][2], mapData[name][0][i][19], mapData[name][0][i][0], mapData[name][15][i][5], mapData[name][15][i][1], mapData[name][15][i][7]]); // weather is 15
+              hards.add([i - cancelled, mapData[name][0][i][2], mapData[name][0][i][19], mapData[name][0][i][0]]); // weather is 15
             }
             else if (mapData[name][0][i][18] == 3)
             {
-              intermediates.add([i - cancelled, mapData[name][0][i][2], mapData[name][0][i][19], mapData[name][0][i][0], mapData[name][15][i][5], mapData[name][15][i][1], mapData[name][15][i][7]]); // weather is 15
+              intermediates.add([i - cancelled, mapData[name][0][i][2], mapData[name][0][i][19], mapData[name][0][i][0]]); // weather is 15
             }
             else if (mapData[name][0][i][18] == 4)
             {
-              wets.add([i - cancelled, mapData[name][0][i][2], mapData[name][0][i][19], mapData[name][0][i][0], mapData[name][15][i][5], mapData[name][15][i][1], mapData[name][15][i][7]]); // weather is 15
+              wets.add([i - cancelled, mapData[name][0][i][2], mapData[name][0][i][19], mapData[name][0][i][0]]); // weather is 15
             }
           }
           else
@@ -484,7 +491,7 @@ class _TimesViewNewState extends State<TimesViewNew> {
         ));
         List<Widget> widgetList = [];
 
-
+        int count = 0;
         for (int i = 0; i < timesData.length; i++)
         {
           if (timesData[i].length != 0)
@@ -505,13 +512,7 @@ class _TimesViewNewState extends State<TimesViewNew> {
                     child: Center(child: Text('Session Time')),
                   ),
                   TableCell(
-                    child: Center(child: Text('Track Temp.')),
-                  ),
-                  TableCell(
-                    child: Center(child: Text('Air Temp.')),
-                  ),
-                  TableCell(
-                    child: Center(child: Text('Wind Speed')),
+                    child: Center(child: Text('Selected')),
                   ),
                 ]
               )
@@ -525,6 +526,14 @@ class _TimesViewNewState extends State<TimesViewNew> {
             ));
             for (int j = 0; j < timesData[i].length; j++)
             {
+              if (chosenLaps[index].length <= count)
+              {
+                chosenLaps[index].add(false);
+                chosenLapTimes[index].add(-1);
+              }
+              chosenLapTimes[index][count] = timesData[i][j][1];
+
+              int _count = count;
               tableWidgets.add(
                 TableRow(
                   children: [
@@ -541,17 +550,19 @@ class _TimesViewNewState extends State<TimesViewNew> {
                       child: Center(child: Text(formatSeconds(timesData[i][j][3]))),
                     ),
                     TableCell(
-                      child: Center(child: Text(timesData[i][j][4].toString())),
-                    ),
-                    TableCell(
-                      child: Center(child: Text(timesData[i][j][5].toString())),
-                    ),
-                    TableCell(
-                      child: Center(child: Text(timesData[i][j][6].toString())),
+                      child: Center(
+                        child: checkbox(
+                          title: "",
+                          initValue: chosenLaps[index][count], 
+                          onChanged:  (sts) => setState(() {chosenLaps[index][_count] = !chosenLaps[index][_count]; containers[index] = GetDriverData(name, displayName, index);})
+                        )
+                      ),
                     ),
                   ]
                 )
               );
+              print(count.toString() + " count");
+              count++;
             }
             widgets.add(
               Table(
@@ -583,14 +594,14 @@ class _TimesViewNewState extends State<TimesViewNew> {
 
     void goToPreviousContainer() {
       setState(() {
-        currentIndex = (currentIndex - 1).clamp(0, containers.length - 1);
+        currentIndex -= 1;
       });
 
     }
 
     void goToNextContainer() {
       setState(() {
-        currentIndex = (currentIndex + 1).clamp(0, containers.length - 1);
+        currentIndex += 1;
       });
     }
 
@@ -606,7 +617,7 @@ class _TimesViewNewState extends State<TimesViewNew> {
         for (int i = 0; i < findMaxLength(drivers.length, mapData["driver3"].length); i++)
         {
           containers.add(
-            GetDriverData(drivers[i].toString(), "Driver Number: " + drivers[i].toString())
+            GetDriverData(drivers[i].toString(), "Driver Number: " + drivers[i].toString(), containers.length)
           );
         }
       });
@@ -621,9 +632,31 @@ class _TimesViewNewState extends State<TimesViewNew> {
         actions: [
           ElevatedButton(
             onPressed: () {
-              FindRace(context);
+              List<List<double>> lapTimes = [];
+              for (int i = 0; i < chosenLaps.length; i++)
+              {
+                lapTimes.add([]);
+                for (int j = 0; j < chosenLaps[i].length; j++)
+                {
+                  if (chosenLaps[i][j])
+                  {
+                    lapTimes[i].add(chosenLapTimes[i][j]);
+                  }
+                }
+              }
+              print(lapTimes);
+              Map<String, dynamic> jsonMap = {
+                "Laps": lapTimes,
+                "Names": mapData["results"]
+              };
+              Navigator.of(context).pop();
+              Navigator.pushNamed(
+                context,
+                "/racepaceanalyse",
+                arguments: jsonMap
+              );
             },
-            child: Text('Graph'),
+            child: Text('Analyse'),
           ),
           ElevatedButton(
             onPressed: currentIndex > 0 ? goToPreviousContainer : null,

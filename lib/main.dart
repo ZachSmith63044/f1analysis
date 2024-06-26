@@ -21,6 +21,13 @@ import "package:f1analysis/pages/timesViewNew.dart";
 import "package:f1analysis/pages/loadingTimesViewNew.dart";
 import "package:f1analysis/pages/lineGraph.dart";
 import "package:f1analysis/pages/scatterGraph.dart";
+import "package:f1analysis/pages/loadRacePaceAnalysis.dart";
+import "package:f1analysis/pages/racePaceAnalysis.dart";
+import "package:f1analysis/pages/racePaceAnalysi.dart";
+import "package:f1analysis/pages/loadingMaxSpeed.dart";
+import "package:f1analysis/pages/maxSpeed.dart";
+import "package:f1analysis/pages/loadingMinimumSpeed.dart";
+import "package:f1analysis/pages/minSpeed.dart";
 
 
 void main() {
@@ -39,6 +46,10 @@ void main() {
         "/seasonpoints": (context) => SeasonView(),
         "/loadminspeed": (context) => LoadMinSpeed(),
         "/minspeed": (context) => MinSpeedView(),
+        "/loadmaxspeed": (context) => LoadMaxSpeed(),
+        "/maxspeed": (context) => MaxSpeed(),
+        "/loadminimumspeed": (context) => LoadMinimumSpeed(),
+        "/minimumspeed": (context) => MinimumSpeed(),
         "/loadracestart": (context) => LoadRaceStart(),
         "/racestart": (context) => RaceStartView(),
         "/loadtyrestrat": (context) => LoadTyreStrategy(),
@@ -50,6 +61,9 @@ void main() {
         "/loadnewtimesview": (context) => LoadTimesNew(),
         "/linegraph": (context) => LineGraph(),
         "/scattergraph": (context) => ScatterGraph(),
+        "/loadracepaceanalysis": (context) => LoadRacePaceChoices(),
+        "/racepaceanalysis": (context) => RacePaceChoices(),
+        "/racepaceanalyse": (context) => RacePaceAnalyse(),
       }
   ));
 }

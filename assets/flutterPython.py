@@ -171,15 +171,19 @@ for i in range(len(driverNumbers2)):
     count = 1
     run = True
     print("run")
+    got = False
     while run:
         try:
             lap = laps[laps['LapNumber'] == count].iloc[0]
             if lap["Team"] != "nan":
-                teams.append(["Red Bull Racing", "McLaren", "Ferrari", "Mercedes", "Aston Martin", "Alpine", "AlphaTauri", "Alfa Romeo", "Haas F1 Team", "Williams"].index(lap["Team"]))
+                teams.append(["Red Bull Racing", "McLaren", "Ferrari", "Mercedes", "Aston Martin", "Alpine", "AlphaTauri", "Alfa Romeo", "Haas F1 Team", "Williams", "RB", "Kick Sauber"].index(lap["Team"]))
+                got = True
                 run = False
             print(lap["Team"], "team")
         except:
             run = False
+        if got == False:
+            teams.append(-1)
 
 data["teams"] = teams
 

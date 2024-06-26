@@ -28,6 +28,7 @@ List<Color> colours = [
   Color.fromRGBO(2, 25, 43, 1),
   Color.fromRGBO(164, 33, 52, 1),
   Color.fromRGBO(220, 220, 220, 1),
+  Color.fromRGBO(0, 160, 222, 1),
   Color.fromRGBO(0, 160, 222, 1)
 ];
 List<List<double>> lapTimes = [];

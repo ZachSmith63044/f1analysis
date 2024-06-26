@@ -140,13 +140,15 @@ class _ScatterGraphState extends State<ScatterGraph> {
           for (int j = 0; j < xAxis[i].length; j++)
           {
             Color colour = lineColour[i];
+            double radius = 5;
             if (selectedSpots.contains(count))
             {
-              colour = Colors.purple;
+              //colour = Colors.purple;
+              radius = 7;
             }
             coordinates.add(ScatterSpot(
               xAxis[i][j], yAxis[i][j],
-              radius: 5,
+              radius: radius,
               color: colour,
               show: true,
             ));
@@ -203,7 +205,7 @@ class _ScatterGraphState extends State<ScatterGraph> {
                 try {
                   // Get the path to the device's Downloads directory
                   final directory = await getDownloadsDirectory() as Directory;
-                  final filePath = '${directory.path}/${title}f1analaysis.png';
+                  final filePath = '${directory.path}/f1analaysiskvaefhu.png';
 
                   // Create a File object and write the captured image to it
                   File file = File(filePath);
@@ -286,7 +288,7 @@ class _ScatterGraphState extends State<ScatterGraph> {
                             )
                           ),
                           leftTitles: AxisTitles(
-                            axisNameSize: 25,
+                            axisNameSize: 35,
                             axisNameWidget: Text(
                               yAxisTitle,
                               style: TextStyle(
@@ -294,9 +296,9 @@ class _ScatterGraphState extends State<ScatterGraph> {
                               ),
                             ),
                             sideTitles: SideTitles(
-                              getTitlesWidget: (value, meta) => Text(value.round().toString(), style: TextStyle(color: Color.fromARGB(255, 150, 150, 150)),),
+                              getTitlesWidget: (value, meta) => Text(value.toStringAsFixed(1), style: TextStyle(color: Color.fromARGB(255, 150, 150, 150)),),
                               showTitles: true,
-                              reservedSize: 25,
+                              reservedSize: 35,
                             )
                           ),
                         ),
@@ -323,7 +325,7 @@ class _ScatterGraphState extends State<ScatterGraph> {
                                     color: touchedBarSpot.color,
                                     fontStyle: FontStyle.italic,
                                   ),
-                                  bottomMargin: -70,
+                                  bottomMargin: -75,
                                   children: [
                                     TextSpan(
                                       text: '${touchedBarSpot.x.toStringAsFixed(1)} \n',

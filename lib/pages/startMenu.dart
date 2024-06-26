@@ -97,7 +97,7 @@ class _StartMenuState extends State<StartMenu> {
   void FindTest(BuildContext context, String path) async {
     final TextEditingController _firstNumberController = TextEditingController();
     final TextEditingController _secondNumberController = TextEditingController();
-    String dropdownValue = "FP1";
+    String dropdownValue = "1";
     await showDialog(
       context: context,
       builder: (context) {
@@ -214,6 +214,22 @@ class _StartMenuState extends State<StartMenu> {
               ElevatedButton(
                 onPressed: () {
                   print("Top Speed View");
+                  FindRace(context, "/loadmaxspeed");
+                  //Navigator.pushNamed(context, "/loadspeedtime");
+                },
+                child: Text("Max Speed")
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  print("Top Speed View");
+                  FindRace(context, "/loadminimumspeed");
+                  //Navigator.pushNamed(context, "/loadspeedtime");
+                },
+                child: Text("Min Speed")
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  print("Top Speed View");
                   FindRace(context, "/loadtopspeed");
                   //Navigator.pushNamed(context, "/loadspeedtime");
                 },
@@ -266,6 +282,14 @@ class _StartMenuState extends State<StartMenu> {
                   //Navigator.pushNamed(context, "/loadspeedtime");
                 },
                 child: Text("Load Times New")
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  print("Load Season Points");
+                  FindRace(context, "/loadracepaceanalysis");
+                  //Navigator.pushNamed(context, "/loadspeedtime");
+                },
+                child: Text("Load Race Pace Analysis")
               ),
               ElevatedButton(
                 onPressed: () {

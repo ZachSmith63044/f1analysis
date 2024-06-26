@@ -186,7 +186,7 @@ class _TopSpeedViewState extends State<TopSpeedView> {
             }
             if (minSpeedEver > topSpeeds[i][j])
             {
-              minSpeedEver = topSpeeds[i][j];
+              minSpeedEver = topSpeeds[i][j].toDouble();
             }
           }
           double average = averageCheck.reduce((value, element) => value + element)/averageCheck.length;

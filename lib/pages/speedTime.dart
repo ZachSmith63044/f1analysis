@@ -25,6 +25,7 @@ bool load2 = false;
 List<String> driverNumbers = [];
 List<String> driverNames = [];
 List<Color> driverColours = [];
+List<String> lapNumbers = [];
 List<int> laps = [];
 List<List> xData = [];
 List<List> yData = [];
@@ -48,12 +49,12 @@ double minY2 = -5;
 double maxY2 = 5;
 double minX = 0;
 double maxX = 1;
-double minY3 = 0;
-double maxY3 = 100;
-double minY4 = 0;
-double maxY4 = 1;
-double minY5 = 1;
-double maxY5 = 8;
+double minY3 = -1;
+double maxY3 = 101;
+double minY4 = -0.05;
+double maxY4 = 1.05;
+double minY5 = 1.5;
+double maxY5 = 8.1;
 RangeValues _sliderValues = RangeValues(0, 1);
 RangeValues _sliderValues2 = RangeValues(0, 1);
 RangeValues _sliderValues3 = RangeValues(0, 1);
@@ -64,6 +65,12 @@ RangeValues _sliderValues6 = RangeValues(0, 1);
 Color pickerColor = Color(0xff443a49);
 Color currentColor = Color(0xff443a49);
 class _SpeedTimeState extends State<SpeedTime> {
+  Color backgroundColor = Colors.white;
+  Color textColour = Colors.black;
+  Color sliderActive = Color.fromARGB(255, 92, 92, 92);
+  Color sliderInactive = Color.fromARGB(255, 141, 141, 141);
+
+  bool darkMode = false;
 
   ScreenshotController screenshotController = ScreenshotController();
 
@@ -105,7 +112,6 @@ class _SpeedTimeState extends State<SpeedTime> {
 
   List<List<List<dynamic>>> findDelta(List<List<dynamic>> relativeDistance, List<List<double>> time, int delta)
   {
-    print(time);
     List<List<dynamic>> xData = [];
     for (int i = 0; i < relativeDistance.length; i++)
     {
@@ -126,7 +132,6 @@ class _SpeedTimeState extends State<SpeedTime> {
       }
       yData.add(adding);
     }
-    print("$yData yData");
     
     for (int i = 0; i < relativeDistance.length; i++)
     {
@@ -146,20 +151,13 @@ class _SpeedTimeState extends State<SpeedTime> {
           if (j == 0)
           {
             diff = relativeDistance[i][j] - relativeDistance[i][j];
-          }
-          else
-          {
-            diff = relativeDistance[i][j - 1] - relativeDistance[i][j];
-          }
-          if (j == 0)
-          {
             yDiff = time[i][j] - time[i][j];
           }
           else
           {
+            diff = relativeDistance[i][j - 1] - relativeDistance[i][j];
             yDiff = time[i][j-1] - time[i][j];
           }
-          
         }
         double diffPerecent = (-testF)/diff;
         double yDiffF = yDiff * diffPerecent;
@@ -177,7 +175,6 @@ class _SpeedTimeState extends State<SpeedTime> {
         }
       }
     }
-    print("$yData");
     return [xData, yData
     ];
   }
@@ -194,15 +191,11 @@ class _SpeedTimeState extends State<SpeedTime> {
     List newDriversNumbersAvailable = [];
     for (int i = 0; i < driverNumbersAvailable.length; i++)
     {
-      print(i);
-      print(driverNumbersAvailable[i]);
-      print(driverList[driverNumbersAvailable[i]]);
       newDriversNumbersAvailable.add(driverList[driverNumbersAvailable[i]]);
     }
     List driverNumbers_ = mapData["results"];
     newDriversNumbersAvailable.removeLast();
     String dropdownValue = newDriversNumbersAvailable[0];
-    print(newDriversNumbersAvailable);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -258,7 +251,6 @@ class _SpeedTimeState extends State<SpeedTime> {
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the dialog.
-                  print('Entered Text: $dropdownValue'); // Print the input value.
                   setState(() {
                     driverNumbers.add(driverNumbers_[newDriversNumbersAvailable.indexOf(dropdownValue)].toString());
                     driverNames.add(dropdownValue);
@@ -276,10 +268,12 @@ class _SpeedTimeState extends State<SpeedTime> {
                         }
                       }
                       laps.add(choose);
+                      lapNumbers.add("fastest");
                     }
                     else
                     {
                       laps.add(int.parse(inputValue2));
+                      lapNumbers.add(inputValue2);
                     }
                     driverColours.add(pickerColor);
                   });
@@ -376,7 +370,7 @@ class _SpeedTimeState extends State<SpeedTime> {
           listB.add(
             LineChartBarData(
               spots: lineData[i],
-              isCurved: true,
+              isCurved: false,
               barWidth: 3,
               color: driverColours[i],
               dotData: FlDotData(show: false),
@@ -466,8 +460,6 @@ class _SpeedTimeState extends State<SpeedTime> {
           for (int j = laps.length - 1; j < laps.length; j++)
           {
             relativeDistance.add(mapData![driverNumbers[j]][10][laps[j]]);
-            print(laps[j]);
-            print(mapData[driverNumbers[j]][7][laps[j]]);
             List<double> adding = [];
             for (int i = 0; i < mapData[driverNumbers[j]][7][laps[j]].length; i++)
             {
@@ -476,8 +468,6 @@ class _SpeedTimeState extends State<SpeedTime> {
             time.add(adding);
           }
 
-          print(relativeDistance);
-          print(time);
           List<List<double>> convert = [];
 
           for (int i = 0; i < time.length; i++)
@@ -489,7 +479,6 @@ class _SpeedTimeState extends State<SpeedTime> {
             }
             convert.add(adding);
           }
-          print("${convert} convert");
           List<List<List<dynamic>>> variable = findDelta(relativeDistance, convert, 0);
           lineData2 = [];
           for (int i = 0; i < variable[0].length; i++)
@@ -501,15 +490,13 @@ class _SpeedTimeState extends State<SpeedTime> {
             }
             lineData2.add(array);
           }
-          print("${time} 2");
-          print(lineData2);
           listC = [];
           for (int i = 0; i < lineData2.length; i++)
           {
             listC.add(
               LineChartBarData(
                 spots: lineData2[i],
-                isCurved: true,
+                isCurved: false,
                 barWidth: 3,
                 color: driverColours[i],
                 dotData: FlDotData(show: false),
@@ -563,24 +550,21 @@ class _SpeedTimeState extends State<SpeedTime> {
         overflow: TextOverflow.clip, // You can also use TextOverflow.clip
         maxLines: 1,
         style: TextStyle(
-          color: Colors.grey
+          color: textColour
         ),
       );
     }
     Widget axisText3(double axisText)
     {
-      print(axisText);
-      print(roundToNearest0_001(0.021983));
       String text = "${roundToNearest0_001(axisText)}";
       text = axisText.toString();
-      print(text);
       return Expanded(
         child: Text(
           text,
           overflow: TextOverflow.clip, // You can also use TextOverflow.clip
           maxLines: 1,
           style: TextStyle(
-            color: Colors.grey
+            color: textColour
           ),
         ),
       );
@@ -593,19 +577,41 @@ class _SpeedTimeState extends State<SpeedTime> {
         overflow: TextOverflow.clip, // You can also use TextOverflow.clip
         maxLines: 1,
         style: TextStyle(
-          color: Colors.grey
+          color: textColour
         ),
       );
     }
 
-    print("$laps laps--");
-    print("$driverNumbers laps--");
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
         title: Text('Speed-Distance Graph'),
         backgroundColor: const Color.fromARGB(255, 0, 31, 236),
         actions: [
+          IconButton(
+            icon: Icon(darkMode ? Icons.light_mode : Icons.dark_mode),
+            onPressed: () {
+              setState(() {
+                if (darkMode)
+                {
+                  backgroundColor = Colors.white;
+                  textColour = Colors.black;
+                  sliderActive = Color.fromARGB(255, 92, 92, 92);
+                  sliderInactive = Color.fromARGB(255, 141, 141, 141);
+                  darkMode = false;
+                }
+                else
+                {
+                  textColour = Colors.white;
+                  backgroundColor = Colors.black;
+                  sliderActive = Color.fromARGB(255, 92, 92, 92);
+                  sliderInactive = Color.fromARGB(255, 141, 141, 141);
+                  darkMode = true;
+                }
+                
+              });
+            },
+          ),
           IconButton(
             icon: Icon(Icons.edit_document),
             onPressed: () {
@@ -632,6 +638,7 @@ class _SpeedTimeState extends State<SpeedTime> {
                 lineData2 = [];
                 relativeDistance = [];
                 time = [];
+                driverNames = [];
               });
             },
           ),
@@ -640,7 +647,7 @@ class _SpeedTimeState extends State<SpeedTime> {
             onPressed: () {
               print('Screenshot');
               screenshotController
-                  .capture(delay: Duration(milliseconds: 10))
+                  .capture(delay: Duration(milliseconds: 5000))
                   .then((capturedImage) async {
                 try {
                   // Get the path to the device's Downloads directory
@@ -672,7 +679,7 @@ class _SpeedTimeState extends State<SpeedTime> {
           child: Screenshot(
             controller: screenshotController,
             child: Container(
-              color: Colors.black,
+              color: backgroundColor,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -684,37 +691,37 @@ class _SpeedTimeState extends State<SpeedTime> {
                         Text('Driver',
                         style: TextStyle(
                           fontSize: 18,
-                          color: Colors.white
+                          color: textColour
                         ))),
                         DataColumn(label: 
                         Text('Colour',
                         style: TextStyle(
                           fontSize: 18,
-                          color: Colors.white
+                          color: textColour
                         ))),
                         DataColumn(label: 
                         Text('Sector 1',
                         style: TextStyle(
                           fontSize: 18,
-                          color: Colors.white
+                          color: textColour
                         ))),
                         DataColumn(label: 
                         Text('Sector 2',
                         style: TextStyle(
                           fontSize: 18,
-                          color: Colors.white
+                          color: textColour
                         ))),
                         DataColumn(label: 
                         Text('Sector 3',
                         style: TextStyle(
                           fontSize: 18,
-                          color: Colors.white
+                          color: textColour
                         ))),
                         DataColumn(label: 
                         Text('Lap Time',
                         style: TextStyle(
                           fontSize: 18,
-                          color: Colors.white
+                          color: textColour
                         ))),
                       ],
                       rows: [
@@ -722,10 +729,10 @@ class _SpeedTimeState extends State<SpeedTime> {
                           DataRow(cells: [
                             DataCell(
                               Text(
-                                driverNames[index],
+                                driverNames[index] + " (" + lapNumbers[index] + ")",
                                 style: TextStyle(
                                   fontSize: 18,
-                                  color: Colors.white
+                                  color: textColour
                                 ),
                               ),
                             ),
@@ -741,7 +748,7 @@ class _SpeedTimeState extends State<SpeedTime> {
                                 sector1Times[index].toString(),
                                 style: TextStyle(
                                   fontSize: 18,
-                                  color: Colors.white
+                                  color: textColour
                                 ),
                               ),
                             ),
@@ -750,7 +757,7 @@ class _SpeedTimeState extends State<SpeedTime> {
                                 sector2Times[index].toString(),
                                 style: TextStyle(
                                   fontSize: 18,
-                                  color: Colors.white
+                                  color: textColour
                                 ),
                               ),
                             ),
@@ -759,7 +766,7 @@ class _SpeedTimeState extends State<SpeedTime> {
                                 sector3Times[index].toString(),
                                 style: TextStyle(
                                   fontSize: 18,
-                                  color: Colors.white
+                                  color: textColour
                                 ),
                               ),
                             ),
@@ -768,7 +775,7 @@ class _SpeedTimeState extends State<SpeedTime> {
                                 lapTimes[index].toString(),
                                 style: TextStyle(
                                   fontSize: 18,
-                                  color: Colors.white
+                                  color: textColour
                                 ),
                               ),
                             ),
@@ -781,7 +788,7 @@ class _SpeedTimeState extends State<SpeedTime> {
                         Text(
                           "0%",
                           style: TextStyle(
-                            color: Colors.white
+                            color: textColour
                           )
                         ),
                         Expanded(
@@ -795,6 +802,8 @@ class _SpeedTimeState extends State<SpeedTime> {
                                 overlayShape: RoundSliderOverlayShape(overlayRadius: 20.0),
                               ),
                               child: RangeSlider(
+                                activeColor: sliderActive,
+                                inactiveColor: sliderInactive,
                                 values: _sliderValues2,
                                 onChanged: (newValues) {
                                   setState(() {
@@ -812,7 +821,7 @@ class _SpeedTimeState extends State<SpeedTime> {
                         Text(
                           "100%",
                           style: TextStyle(
-                            color: Colors.white
+                            color: textColour
                           )
                         ),
                       ],
@@ -829,12 +838,12 @@ class _SpeedTimeState extends State<SpeedTime> {
                                 Text(
                                   "400",
                                   style: TextStyle(
-                                    color: Colors.white
+                                    color: textColour
                                   )
                                 ),
                                 Expanded(
                                   child: RotatedBox(
-                                    
+
                                     quarterTurns: 3, // Rotate the slider to make it vertical
                                     child: SliderTheme(
                                       data: SliderThemeData(
@@ -843,6 +852,8 @@ class _SpeedTimeState extends State<SpeedTime> {
                                         overlayShape: RoundSliderOverlayShape(overlayRadius: 20.0),
                                       ),
                                       child: RangeSlider(
+                                        activeColor: sliderActive,
+                                        inactiveColor: sliderInactive,
                                         values: _sliderValues,
                                         onChanged: (newValues) {
                                           setState(() {
@@ -860,7 +871,7 @@ class _SpeedTimeState extends State<SpeedTime> {
                                 Text(
                                   "0",
                                   style: TextStyle(
-                                    color: Colors.white
+                                    color: textColour
                                   )
                                 ),
                               ],
@@ -893,7 +904,7 @@ class _SpeedTimeState extends State<SpeedTime> {
                                     axisNameWidget: Text(
                                       "Relative Distance",
                                       style: TextStyle(
-                                        color: Colors.white
+                                        color: textColour
                                       ),
                                     ),
                                     sideTitles: SideTitles(
@@ -902,10 +913,11 @@ class _SpeedTimeState extends State<SpeedTime> {
                                     ),
                                   ),
                                   leftTitles: AxisTitles(
+                                    axisNameSize: 22,
                                     axisNameWidget: Text(
                                       "Speed (km/h)",
                                       style: TextStyle(
-                                        color: Colors.white
+                                        color: textColour
                                       ),
                                     ),
                                     sideTitles: SideTitles(
@@ -949,7 +961,7 @@ class _SpeedTimeState extends State<SpeedTime> {
                                 Text(
                                   "5",
                                   style: TextStyle(
-                                    color: Colors.white
+                                    color: textColour
                                   )
                                 ),
                                 Expanded(
@@ -963,6 +975,8 @@ class _SpeedTimeState extends State<SpeedTime> {
                                         overlayShape: RoundSliderOverlayShape(overlayRadius: 20.0),
                                       ),
                                       child: RangeSlider(
+                                        activeColor: sliderActive,
+                                        inactiveColor: sliderInactive,
                                         values: _sliderValues3,
                                         onChanged: (newValues) {
                                           setState(() {
@@ -980,7 +994,7 @@ class _SpeedTimeState extends State<SpeedTime> {
                                 Text(
                                   "-5",
                                   style: TextStyle(
-                                    color: Colors.white
+                                    color: textColour
                                   )
                                 ),
                               ],
@@ -1016,10 +1030,11 @@ class _SpeedTimeState extends State<SpeedTime> {
                                     )
                                   ),
                                   leftTitles: AxisTitles(
+                                    axisNameSize: 22,
                                     axisNameWidget: Text(
                                       "Time delta (s)",
                                       style: TextStyle(
-                                        color: Colors.white
+                                        color: textColour
                                       ),
                                     ),
                                     sideTitles: SideTitles(
@@ -1060,7 +1075,7 @@ class _SpeedTimeState extends State<SpeedTime> {
                                 Text(
                                   "100",
                                   style: TextStyle(
-                                    color: Colors.white
+                                    color: textColour
                                   )
                                 ),
                                 Expanded(
@@ -1074,6 +1089,8 @@ class _SpeedTimeState extends State<SpeedTime> {
                                         overlayShape: RoundSliderOverlayShape(overlayRadius: 20.0),
                                       ),
                                       child: RangeSlider(
+                                        activeColor: sliderActive,
+                                        inactiveColor: sliderInactive,
                                         values: _sliderValues4,
                                         onChanged: (newValues) {
                                           setState(() {
@@ -1091,7 +1108,7 @@ class _SpeedTimeState extends State<SpeedTime> {
                                 Text(
                                   "0",
                                   style: TextStyle(
-                                    color: Colors.white
+                                    color: textColour
                                   )
                                 ),
                               ],
@@ -1127,10 +1144,11 @@ class _SpeedTimeState extends State<SpeedTime> {
                                     )
                                   ),
                                   leftTitles: AxisTitles(
+                                    axisNameSize: 22,
                                     axisNameWidget: Text(
                                       "Throttle (0-100%)",
                                       style: TextStyle(
-                                        color: Colors.white
+                                        color: textColour
                                       ),
                                     ),
                                     sideTitles: SideTitles(
@@ -1171,7 +1189,7 @@ class _SpeedTimeState extends State<SpeedTime> {
                                 Text(
                                   "1",
                                   style: TextStyle(
-                                    color: Color.fromARGB(255, 84, 75, 75)
+                                    color: textColour
                                   )
                                 ),
                                 Expanded(
@@ -1185,6 +1203,8 @@ class _SpeedTimeState extends State<SpeedTime> {
                                         overlayShape: RoundSliderOverlayShape(overlayRadius: 20.0),
                                       ),
                                       child: RangeSlider(
+                                        activeColor: sliderActive,
+                                        inactiveColor: sliderInactive,
                                         values: _sliderValues5,
                                         onChanged: (newValues) {
                                           setState(() {
@@ -1202,7 +1222,7 @@ class _SpeedTimeState extends State<SpeedTime> {
                                 Text(
                                   "0",
                                   style: TextStyle(
-                                    color: Colors.white
+                                    color: textColour
                                   )
                                 ),
                               ],
@@ -1238,10 +1258,11 @@ class _SpeedTimeState extends State<SpeedTime> {
                                     )
                                   ),
                                   leftTitles: AxisTitles(
+                                    axisNameSize: 22,
                                     axisNameWidget: Text(
                                       "Brake (0/off or 1/on)",
                                       style: TextStyle(
-                                        color: Colors.white
+                                        color: textColour
                                       ),
                                     ),
                                     sideTitles: SideTitles(
@@ -1282,7 +1303,7 @@ class _SpeedTimeState extends State<SpeedTime> {
                                 Text(
                                   "8",
                                   style: TextStyle(
-                                    color: Colors.white
+                                    color: textColour
                                   )
                                 ),
                                 Expanded(
@@ -1296,6 +1317,8 @@ class _SpeedTimeState extends State<SpeedTime> {
                                         overlayShape: RoundSliderOverlayShape(overlayRadius: 20.0),
                                       ),
                                       child: RangeSlider(
+                                        activeColor: sliderActive,
+                                        inactiveColor: sliderInactive,
                                         values: _sliderValues6,
                                         onChanged: (newValues) {
                                           setState(() {
@@ -1313,7 +1336,7 @@ class _SpeedTimeState extends State<SpeedTime> {
                                 Text(
                                   "1",
                                   style: TextStyle(
-                                    color: Colors.white
+                                    color: textColour
                                   )
                                 ),
                               ],
@@ -1349,10 +1372,11 @@ class _SpeedTimeState extends State<SpeedTime> {
                                     )
                                   ),
                                   leftTitles: AxisTitles(
+                                    axisNameSize: 22,
                                     axisNameWidget: Text(
                                       "Gear (1-8)",
                                       style: TextStyle(
-                                        color: Colors.white
+                                        color: textColour
                                       ),
                                     ),
                                     sideTitles: SideTitles(
